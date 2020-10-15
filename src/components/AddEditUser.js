@@ -1,60 +1,90 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import axios from 'axios';
+import axios from "axios";
 import { addEditUsers } from "../actions/userActions";
-import { TextField, Button, Grid } from "@material-ui/core";
-// import Autocomplete from '@material-ui/lab/Autocomplete';
+import { TextField, Button, Grid, MenuItem } from "@material-ui/core";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 class AddEditUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      user: {
-        id: "",
-        namaLengkap: "",
-        kewarganegaraan: "",
-        posisi: "",
-        alamat: "",
-        kecamatan: "",
-        kota: "",
-        provinsi: "",
-      },
+      namaLengkap: "",
+      kewarganegaraan: "",
+      posisi: "",
+      alamat: "",
+      kecamatan: "",
+      kota: "",
+      provinsi: "",
       open: false,
+      list: [],
+      listProv: [],
+      listKota: [],
+      listKecamatan: [],
     };
   }
 
+  componentDidMount() {
+    axios.get("https://dev.farizdotid.com/api/daerahindonesia/provinsi").then((res) => {
+      const prov = res.data.provinsi;
+      this.setState({ listProv: prov });
+    });
+  }
+
   handleChange = (event) => {
+    const { name } = event.target;
+    if (name === 'kota') {
+      axios.get(
+        `https://dev.farizdotid.com/api/daerahindonesia/kecamatan?id_kota=${this.state.listKota.find(a => a.nama === event.target.value).id}`
+      ).then(res => {
+          const kecamatan = res.data.kecamatan;
+          this.setState({ listKecamatan: kecamatan });
+      })
+      this.setState({
+        [name]: event.target.value,
+      });
+    }
     this.setState({
-      [event.target.name]: event.target.value,
+      [name]: event.target.value,
     });
   };
-
+  
+  handleAutoComplete = (event, values) => {
+    axios.get(
+      `https://dev.farizdotid.com/api/daerahindonesia/kota?id_provinsi=${this.state.listProv.find(a => a.nama === values).id}`
+    ).then(res => {
+        const kota = res.data.kota_kabupaten;
+        this.setState({ listKota: kota });
+    })
+    this.setState({
+      provinsi: values,
+    });
+  };
+  
   handleSubmit = () => {
-    const requestOptions = {
-      body: [{
-        namaLengkap: this.state.namaLengkap,
-        kewarganegaraan: this.state.kewarganegaraan,
-        posisi: this.state.posisi,
-        alamat: this.state.alamat,
-      }],
-    };
     const user = {
       namaLengkap: this.state.namaLengkap,
       kewarganegaraan: this.state.kewarganegaraan,
       posisi: this.state.posisi,
       alamat: this.state.alamat,
     };
-    axios.post("https://reqaid.com/api/FakePosts", requestOptions).then(
-      (res) => {
-        console.log(res);
-        console.log("Berhasil");
-      }
-    );
+    const res = axios.post("https://reqaid.com/api/FakePosts", user);
+    this.setState({ list: res });
   };
 
   render() {
-    const { namaLengkap, kewarganegaraan, posisi, alamat } = this.state;
+    const {
+      namaLengkap,
+      kewarganegaraan,
+      posisi,
+      alamat,
+      listProv,
+      listKota,
+      listKecamatan,
+      kecamatan,
+      kota,
+    } = this.state;
     return (
       <Grid>
         <TextField
@@ -62,6 +92,7 @@ class AddEditUser extends Component {
           onChange={this.handleChange}
           value={namaLengkap}
           fullWidth
+          name="namaLengkap"
           margin="normal"
           variant="outlined"
           required
@@ -72,6 +103,7 @@ class AddEditUser extends Component {
           onChange={this.handleChange}
           value={kewarganegaraan}
           fullWidth
+          name="kewarganegaraan"
           margin="normal"
           variant="outlined"
           required
@@ -82,6 +114,7 @@ class AddEditUser extends Component {
           onChange={this.handleChange}
           value={posisi}
           fullWidth
+          name="posisi"
           margin="normal"
           variant="outlined"
           required
@@ -92,25 +125,58 @@ class AddEditUser extends Component {
           onChange={this.handleChange}
           value={alamat}
           fullWidth
+          name="alamat"
           margin="normal"
           variant="outlined"
         />
 
-        {/* <Autocomplete
+        <Autocomplete
           freeSolo
-          id="free-solo-2-demo"
+          onChange={this.handleAutoComplete}
           disableClearable
-          options={fetchProvinsi.map((option) => option.namaLengkap)}
+          options={listProv.map((option) => option.nama)}
           renderInput={(params) => (
             <TextField
               {...params}
               label="Provinsi"
               margin="normal"
               variant="outlined"
-              InputProps={{ ...params.InputProps, type: 'search' }}
+              InputProps={{ ...params.InputProps, type: "search" }}
             />
           )}
-        /> */}
+        />
+
+        <TextField
+          fullWidth
+          select
+          label="Kota"
+          name="kota"
+          value={kota}
+          onChange={this.handleChange}
+          helperText="Pilih Kota"
+        >
+          {listKota.map((option) => (
+            <MenuItem key={option.nama} value={option.nama}>
+              {option.nama}
+            </MenuItem>
+          ))}
+        </TextField>
+
+        <TextField
+          fullWidth
+          select
+          label="Kecamatan"
+          name="kecamatan"
+          value={kecamatan}
+          onChange={this.handleChange}
+          helperText="Pilih Kecamatan"
+        >
+          {listKecamatan.map((option) => (
+            <MenuItem key={option.nama} value={option.nama}>
+              {option.nama}
+            </MenuItem>
+          ))}
+        </TextField>
 
         <Button
           type="submit"
