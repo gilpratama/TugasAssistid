@@ -21,7 +21,8 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import DeleteIcon from '@material-ui/icons/Delete';
-import FilterListIcon from '@material-ui/icons/FilterList';
+import PrintIcon from '@material-ui/icons/Print';
+// import Excel from '@material-ui/icons/GridOn';
 import EditIcon from '@material-ui/icons/Edit';
 
 import { Link } from 'react-router-dom';
@@ -161,6 +162,7 @@ const EnhancedTableToolbar = props => {
         )}
       </div>
       <div className={classes.spacer} />
+      
       <div className={classes.actions}>
         {numSelected > 0 ? (
           <Tooltip title="Delete">
@@ -169,9 +171,9 @@ const EnhancedTableToolbar = props => {
             </IconButton>
           </Tooltip>
         ) : (
-          <Tooltip title="Filter list">
-            <IconButton aria-label="filter list">
-              <FilterListIcon />
+          <Tooltip title="Print">
+            <IconButton onClick={() => window.print(JSON.stringify(props.users))}>
+              <PrintIcon />
             </IconButton>
           </Tooltip>
         )}

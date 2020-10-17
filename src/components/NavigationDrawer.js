@@ -18,7 +18,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 
 import DataTable from './DataTable';
-import AddEditUser from './AddEditUser';
+import AddUser from './AddUser';
 
 import { Route, Link } from 'react-router-dom';
 import { connect } from 'react-redux';
@@ -140,7 +140,7 @@ function NavigationDrawer(props) {
       <main className={classes.content}>
         <div className={classes.toolbar} />
         <Route exact path="/" component={DataTable} />
-        <Route exact path="/add-edit" component={AddEditUser} />
+        <Route exact path="/add-edit" component={AddUser} />
       </main>
     </div>
   );

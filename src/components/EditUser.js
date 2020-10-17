@@ -6,7 +6,7 @@ import { addEditUsers } from "../actions/userActions";
 import { TextField, Button, Grid, MenuItem } from "@material-ui/core";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 
-class AddEditUser extends Component {
+class AddUser extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -192,7 +192,7 @@ class AddEditUser extends Component {
   }
 }
 
-AddEditUser.propTypes = {
+EditUser.propTypes = {
   addNewUser: PropTypes.func,
   snackBarMessage: PropTypes.string,
   snackBarVariant: PropTypes.string,
@@ -204,5 +204,5 @@ const mapStateToProps = (state) => ({
 });
 
 export default connect(mapStateToProps, { addNewUser: addEditUsers })(
-  AddEditUser
+  AddUser
 );
